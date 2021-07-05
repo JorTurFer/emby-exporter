@@ -15,6 +15,12 @@ namespace emby_exporter.Services
         });
 
         private readonly Gauge EmbyUsers = Metrics.CreateGauge("emby_users_total", "Emby Users");
+        private readonly Gauge EmbyInfo = Metrics.CreateGauge("emby_info", "Emby Info", new GaugeConfiguration
+        {
+            LabelNames = new[] { "id","operating_system","server_name","version","wan_address" }
+        });
+
+
         private readonly HttpClient _httpClient;
 
         public Scrapper(HttpClient httpClient)
@@ -37,6 +43,11 @@ namespace emby_exporter.Services
                 content = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<IList<UsersResponse>>(content);
                 EmbyUsers.IncTo(users.Count);
+
+                response = await _httpClient.GetAsync("/System/Info");
+                content = await response.Content.ReadAsStringAsync();
+                var serverInfo = JsonSerializer.Deserialize<ServerInfoResponse>(content);
+                EmbyInfo.WithLabels(serverInfo.Id, serverInfo.OperatingSystem,serverInfo.ServerName,serverInfo.Version,serverInfo.WanAddress).IncTo(1);
             });
         }
     }
