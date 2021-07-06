@@ -41,28 +41,28 @@ namespace emby_exporter.Services
                 var response = await _httpClient.GetAsync("/Items/Counts");
                 var content = await response.Content.ReadAsStringAsync();
                 var summary = JsonSerializer.Deserialize<ItemsResponse>(content);
-                EmbyLibrary.WithLabels("movies").IncTo(summary.MovieCount);
-                EmbyLibrary.WithLabels("series").IncTo(summary.SeriesCount);
-                EmbyLibrary.WithLabels("episodes").IncTo(summary.EpisodeCount);
+                EmbyLibrary.WithLabels("movies").Set(summary.MovieCount);
+                EmbyLibrary.WithLabels("series").Set(summary.SeriesCount);
+                EmbyLibrary.WithLabels("episodes").Set(summary.EpisodeCount);
 
                 response = await _httpClient.GetAsync("/Users");
                 content = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<IList<UsersResponse>>(content);
-                EmbyUsers.IncTo(users.Count);
+                EmbyUsers.Set(users.Count);
 
                 response = await _httpClient.GetAsync("/Devices");
                 content = await response.Content.ReadAsStringAsync();
                 var devices = JsonSerializer.Deserialize<DevicesResponse>(content);
-                EmbyDevices.IncTo(devices.TotalRecordCount);
+                EmbyDevices.Set(devices.TotalRecordCount);
 
                 response = await _httpClient.GetAsync("/Sessions");
                 content = await response.Content.ReadAsStringAsync();
                 var sessions = JsonSerializer.Deserialize<IList<SessionsResponse>>(content);
                 var videoSessions = sessions.Where(x=>x.NowPlayingItem is not null).ToList();
-                EmbySessions.WithLabels("direct-play").IncTo(videoSessions.Count(x => x.TranscodeType == TranscodeType.Direct));
-                EmbySessions.WithLabels("audio-transcode").IncTo(videoSessions.Count(x => x.TranscodeType == TranscodeType.Audio));
-                EmbySessions.WithLabels("video-transcode").IncTo(videoSessions.Count(x => x.TranscodeType == TranscodeType.Video));
-                EmbySessions.WithLabels("full-transcode").IncTo(videoSessions.Count(x => x.TranscodeType == TranscodeType.Full));
+                EmbySessions.WithLabels("direct-play").Set(videoSessions.Count(x => x.TranscodeType == TranscodeType.Direct));
+                EmbySessions.WithLabels("audio-transcode").Set(videoSessions.Count(x => x.TranscodeType == TranscodeType.Audio));
+                EmbySessions.WithLabels("video-transcode").Set(videoSessions.Count(x => x.TranscodeType == TranscodeType.Video));
+                EmbySessions.WithLabels("full-transcode").Set(videoSessions.Count(x => x.TranscodeType == TranscodeType.Full));
 
 
                 response = await _httpClient.GetAsync("/System/Info");
