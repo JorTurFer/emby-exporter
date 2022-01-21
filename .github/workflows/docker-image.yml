@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      #id-token: write # needed for signing the images with GitHub OIDC Token **not production ready**
+      id-token: write # needed for signing the images with GitHub OIDC Token **not production ready**
 
     name: Publish and Sign
     steps:
@@ -27,6 +27,7 @@ jobs:
           images: ghcr.io/JorTurFer/emby-exporter
           tags: |
             latest
+            type=sha,format=long
 
       - name: Login to GHCR
         if: github.ref == 'refs/heads/master' # Solo master
