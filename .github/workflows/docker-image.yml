@@ -25,7 +25,11 @@ jobs:
         uses: docker/metadata-action@v3.6.0
         with:
           images: ghcr.io/JorTurFer/emby-exporter
-          tags: type=sha,format=long,latest,main
+          tags: |
+            latest
+            main
+            type=sha
+            format=long
 
       - name: Login to GHCR
         if: github.ref == 'refs/heads/master' # Solo master
