@@ -27,8 +27,6 @@ jobs:
           images: ghcr.io/JorTurFer/emby-exporter
           tags: |
             latest
-            main
-            type=sha,format=long
 
       - name: Login to GHCR
         if: github.ref == 'refs/heads/master' # Solo master
